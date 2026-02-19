@@ -1,6 +1,6 @@
 # Project-Dekstop
 
-Grupa: Marat Komar i Vladyslav Zubak 87149
+Grupa: Marat Komar 88093 i Vladyslav Zubak 87149
 link do Figma: https://www.figma.com/make/H0oF4FGNPuteYrOd4JmtuG/Student-Journal-Web-App?t=xQSTYw1EThYQhnP1-1
 
 Stwórz nowoczesny frontend aplikacji webowej typu „Dziennik Studenta” (webowy dziennik ocen i zajęć). Projekt powinien być responsywny, estetyczny i przejrzysty
