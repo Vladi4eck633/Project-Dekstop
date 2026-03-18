@@ -7,8 +7,10 @@ function createWindow() {
     height: 600
   });
 
-  win.loadFile('index.html');
+  win.loadURL('http://localhost:5173');
 
 }
 
 app.whenReady().then(createWindow);
+
+
