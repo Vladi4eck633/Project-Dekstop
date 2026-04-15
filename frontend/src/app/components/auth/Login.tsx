@@ -6,14 +6,52 @@ export function Login() {
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
 
-  const handleLogin = (e: React.FormEvent) => {
-    e.preventDefault();
-    // Простая авторизация без валидации
-    localStorage.setItem('isLoggedIn', 'true');
-    localStorage.setItem('studentName', 'Jan Kowalski');
-    navigate('/dashboard');
-  };
+
+     const handleLogin = async (e: React.FormEvent) => {
+  e.preventDefault();
+  setError('');
+
+  
+  if (!email.includes('@')) {
+    setError("Email musi zawierać znak @");
+    return;
+  }
+
+  if (!(email.includes('.com') || email.includes('.pl'))) {
+    setError("Email musi zawierać domenę .com lub .pl");
+    return;
+  }
+  try {
+    const res = await fetch("http://127.0.0.1:8000/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        username: email,
+        password: password,
+      }),
+    });
+
+    const data = await res.json();
+
+    if (data.status === "ok") {
+      localStorage.setItem('isLoggedIn', 'true');
+      localStorage.setItem('studentName', email);
+      navigate('/dashboard');
+    } else {
+      setError(data.message);
+    }
+
+  } catch (err) {
+    console.error(err);
+    setError("Błąd połączenia z serwerem");
+  }
+};  
+
+
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-slate-900 to-blue-950 flex items-center justify-center p-4">
@@ -43,9 +81,12 @@ export function Login() {
                 </div>
                 <input
                   id="email"
-                  type="email"
+                  type="text"
                   value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  onChange={(e) => {
+                    setEmail(e.target.value);
+                    setError('');
+                  }}
                   className="w-full pl-10 pr-4 py-3 bg-gray-900/50 border border-gray-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                   placeholder="twoj.email@uczelnia.pl"
                   required
@@ -66,7 +107,10 @@ export function Login() {
                   id="password"
                   type="password"
                   value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  onChange={(e) => {
+                    setPassword(e.target.value);
+                    setError('');
+                  }}
                   className="w-full pl-10 pr-4 py-3 bg-gray-900/50 border border-gray-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                   placeholder="••••••••"
                   required
@@ -96,6 +140,11 @@ export function Login() {
               <LogIn className="w-5 h-5" />
               Zaloguj się
             </button>
+            {error && (
+              <p className="text-red-400 text-sm text-center mt-3">
+                {error}
+              </p>
+              )}
           </form>
 
           {/* Divider */}
