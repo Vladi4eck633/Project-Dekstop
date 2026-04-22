@@ -1,5 +1,11 @@
 node_modules
 dist
+api.env
 .env
+<<<<<<< HEAD
 bd.env
 __pycache__
+=======
+__pycache__/
+*.pyc
+>>>>>>> db39e2ea7ef12e37e98373b1a8c8f95d96204a5d
