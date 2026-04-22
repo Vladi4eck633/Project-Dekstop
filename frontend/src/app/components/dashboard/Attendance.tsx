@@ -1,3 +1,4 @@
+import React, { useEffect, useState } from 'react';
 import { UserCheck, TrendingUp, Calendar, AlertCircle } from 'lucide-react';
 import * as Progress from '@radix-ui/react-progress';
 
@@ -11,64 +12,26 @@ interface AttendanceRecord {
   percentage: number;
 }
 
-const mockAttendance: AttendanceRecord[] = [
-  {
-    id: 1,
-    subject: 'Programowanie obiektowe',
-    totalClasses: 20,
-    attended: 18,
-    excused: 1,
-    unexcused: 1,
-    percentage: 90,
-  },
-  {
-    id: 2,
-    subject: 'Bazy danych',
-    totalClasses: 18,
-    attended: 17,
-    excused: 1,
-    unexcused: 0,
-    percentage: 94.4,
-  },
-  {
-    id: 3,
-    subject: 'Algorytmy i struktury danych',
-    totalClasses: 22,
-    attended: 19,
-    excused: 2,
-    unexcused: 1,
-    percentage: 86.4,
-  },
-  {
-    id: 4,
-    subject: 'Inżynieria oprogramowania',
-    totalClasses: 16,
-    attended: 16,
-    excused: 0,
-    unexcused: 0,
-    percentage: 100,
-  },
-  {
-    id: 5,
-    subject: 'Matematyka dyskretna',
-    totalClasses: 24,
-    attended: 20,
-    excused: 3,
-    unexcused: 1,
-    percentage: 83.3,
-  },
-  {
-    id: 6,
-    subject: 'Systemy operacyjne',
-    totalClasses: 19,
-    attended: 18,
-    excused: 1,
-    unexcused: 0,
-    percentage: 94.7,
-  },
-];
-
 export function Attendance() {
+  const [attendanceData, setAttendanceData] = useState<AttendanceRecord[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const userEmail = localStorage.getItem('studentName'); 
+    if (userEmail) {
+      fetch(`http://127.0.0.1:8000/attendance/${userEmail}`)
+        .then(res => res.json())
+        .then(data => {
+          setAttendanceData(Array.isArray(data) ? data : []);
+          setLoading(false);
+        })
+        .catch(err => {
+          console.error("Błąd ładowania frekwencji:", err);
+          setLoading(false);
+        });
+    }
+  }, []);
+
   const getPercentageColor = (percentage: number) => {
     if (percentage >= 90) return 'text-green-400';
     if (percentage >= 75) return 'text-yellow-400';
@@ -81,14 +44,19 @@ export function Attendance() {
     return 'bg-red-500';
   };
 
-  const totalAttended = mockAttendance.reduce((sum, record) => sum + record.attended, 0);
-  const totalClasses = mockAttendance.reduce((sum, record) => sum + record.totalClasses, 0);
-  const overallPercentage = ((totalAttended / totalClasses) * 100).toFixed(1);
-  const totalUnexcused = mockAttendance.reduce((sum, record) => sum + record.unexcused, 0);
+  
+  const totalAttended = attendanceData.reduce((sum, r) => sum + r.attended, 0);
+  const totalClasses = attendanceData.reduce((sum, r) => sum + r.totalClasses, 0);
+  const overallPercentage = totalClasses > 0 ? ((totalAttended / totalClasses) * 100).toFixed(1) : "0.0";
+  const totalUnexcused = attendanceData.reduce((sum, r) => sum + r.unexcused, 0);
+
+  if (loading) {
+    return <div className="text-white p-10 text-center">Ładowanie frekwencji...</div>;
+  }
 
   return (
     <div className="space-y-6">
-      {/* Header */}
+      
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold text-white flex items-center gap-3">
@@ -99,7 +67,7 @@ export function Attendance() {
         </div>
       </div>
 
-      {/* Stats Cards */}
+      
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="bg-gradient-to-br from-blue-600 to-blue-700 rounded-xl p-6 text-white shadow-lg shadow-blue-500/20 border border-blue-500/30">
           <div className="flex items-center justify-between">
@@ -137,14 +105,14 @@ export function Attendance() {
         </div>
       </div>
 
-      {/* Attendance Table */}
+      
       <div className="bg-slate-800 rounded-xl shadow-lg border border-slate-700 overflow-hidden">
         <div className="px-6 py-4 border-b border-slate-700 bg-slate-900/50">
           <h2 className="font-semibold text-white">Szczegółowa frekwencja</h2>
         </div>
 
         <div className="p-6 space-y-6">
-          {mockAttendance.map((record) => (
+          {attendanceData.map((record) => (
             <div key={record.id} className="space-y-3">
               <div className="flex items-center justify-between">
                 <div>
@@ -160,7 +128,7 @@ export function Attendance() {
                 </div>
               </div>
 
-              {/* Progress Bar */}
+              
               <Progress.Root
                 className="relative overflow-hidden bg-slate-700 rounded-full w-full h-3"
                 value={record.percentage}
@@ -173,7 +141,7 @@ export function Attendance() {
                 />
               </Progress.Root>
 
-              {/* Detailed Stats */}
+              
               <div className="flex flex-wrap gap-4 text-sm">
                 <div className="flex items-center gap-2">
                   <div className="w-3 h-3 bg-green-500 rounded-full"></div>
@@ -195,7 +163,7 @@ export function Attendance() {
                 </div>
               </div>
 
-              {/* Warning */}
+              
               {record.percentage < 80 && (
                 <div className="flex items-start gap-2 p-3 bg-red-900/30 border border-red-700/50 rounded-lg">
                   <AlertCircle className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
@@ -212,7 +180,7 @@ export function Attendance() {
         </div>
       </div>
 
-      {/* Info Box */}
+      
       <div className="bg-blue-900/30 border border-blue-700/50 rounded-xl p-6">
         <div className="flex items-start gap-3">
           <AlertCircle className="w-6 h-6 text-blue-400 flex-shrink-0" />

@@ -1,3 +1,4 @@
+import React, { useEffect, useState } from 'react';
 import { Calendar, Clock, MapPin, User } from 'lucide-react';
 
 interface ScheduleItem {
@@ -10,131 +11,64 @@ interface ScheduleItem {
   type: 'lecture' | 'lab' | 'tutorial';
 }
 
-const mockSchedule: ScheduleItem[] = [
-  {
-    id: 1,
-    day: 'Poniedziałek',
-    time: '08:00 - 09:30',
-    subject: 'Programowanie obiektowe',
-    room: 'Sala 201',
-    teacher: 'Dr hab. Anna Nowak',
-    type: 'lecture',
-  },
-  {
-    id: 2,
-    day: 'Poniedziałek',
-    time: '10:00 - 11:30',
-    subject: 'Bazy danych',
-    room: 'Lab 115',
-    teacher: 'Prof. Jan Wiśniewski',
-    type: 'lab',
-  },
-  {
-    id: 3,
-    day: 'Wtorek',
-    time: '09:00 - 10:30',
-    subject: 'Algorytmy i struktury danych',
-    room: 'Sala 305',
-    teacher: 'Dr Piotr Kowalczyk',
-    type: 'lecture',
-  },
-  {
-    id: 4,
-    day: 'Wtorek',
-    time: '11:00 - 12:30',
-    subject: 'Matematyka dyskretna',
-    room: 'Sala 102',
-    teacher: 'Prof. Tomasz Kamiński',
-    type: 'tutorial',
-  },
-  {
-    id: 5,
-    day: 'Środa',
-    time: '08:00 - 09:30',
-    subject: 'Inżynieria oprogramowania',
-    room: 'Lab 220',
-    teacher: 'Dr Magdalena Lewandowska',
-    type: 'lab',
-  },
-  {
-    id: 6,
-    day: 'Środa',
-    time: '10:00 - 11:30',
-    subject: 'Systemy operacyjne',
-    room: 'Sala 403',
-    teacher: 'Dr Krzysztof Zieliński',
-    type: 'lecture',
-  },
-  {
-    id: 7,
-    day: 'Czwartek',
-    time: '09:00 - 10:30',
-    subject: 'Bazy danych',
-    room: 'Sala 201',
-    teacher: 'Prof. Jan Wiśniewski',
-    type: 'lecture',
-  },
-  {
-    id: 8,
-    day: 'Czwartek',
-    time: '11:00 - 12:30',
-    subject: 'Programowanie obiektowe',
-    room: 'Lab 118',
-    teacher: 'Dr hab. Anna Nowak',
-    type: 'lab',
-  },
-  {
-    id: 9,
-    day: 'Piątek',
-    time: '08:00 - 09:30',
-    subject: 'Systemy operacyjne',
-    room: 'Lab 315',
-    teacher: 'Dr Krzysztof Zieliński',
-    type: 'lab',
-  },
-  {
-    id: 10,
-    day: 'Piątek',
-    time: '10:00 - 11:30',
-    subject: 'Algorytmy i struktury danych',
-    room: 'Sala 204',
-    teacher: 'Dr Piotr Kowalczyk',
-    type: 'tutorial',
-  },
-];
+
 
 const weekDays = ['Poniedziałek', 'Wtorek', 'Środa', 'Czwartek', 'Piątek'];
 
 export function Schedule() {
+  const [schedule, setSchedule] = useState<ScheduleItem[]>([]);
+  const [loading, setLoading] = useState(true);
+
+
+  useEffect(() => {
+    
+    const userEmail = localStorage.getItem('studentName'); 
+    
+    if (userEmail) {
+      fetch(`http://127.0.0.1:8000/timetable/${userEmail}`)
+        .then((res) => res.json())
+        .then((data) => {
+          setSchedule(Array.isArray(data) ? data : []);
+          setLoading(false);
+        })
+        .catch((err) => {
+          console.error("Błąd ładowania planu:", err);
+          setLoading(false);
+        });
+    } else {
+      setLoading(false);
+    }
+  }, []);
+
   const getTypeColor = (type: string) => {
     switch (type) {
-      case 'lecture':
-        return 'bg-blue-500';
-      case 'lab':
-        return 'bg-green-500';
-      case 'tutorial':
-        return 'bg-purple-500';
-      default:
-        return 'bg-gray-500';
+      case 'lecture': return 'bg-blue-500';
+      case 'lab': return 'bg-green-500';
+      case 'tutorial': return 'bg-purple-500';
+      default: return 'bg-gray-500';
     }
   };
 
   const getTypeLabel = (type: string) => {
     switch (type) {
-      case 'lecture':
-        return 'Wykład';
-      case 'lab':
-        return 'Laboratorium';
-      case 'tutorial':
-        return 'Ćwiczenia';
-      default:
-        return type;
+      case 'lecture': return 'Wykład';
+      case 'lab': return 'Laboratorium';
+      case 'tutorial': return 'Ćwiczenia';
+      default: return type;
     }
   };
 
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-64 text-white">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mr-3"></div>
+        Ładowanie planu zajęć...
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
-      {/* Header */}
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold text-white flex items-center gap-3">
@@ -145,7 +79,6 @@ export function Schedule() {
         </div>
       </div>
 
-      {/* Legend */}
       <div className="bg-slate-800 rounded-xl shadow-lg border border-slate-700 p-4">
         <h3 className="font-semibold text-white mb-3">Legenda:</h3>
         <div className="flex flex-wrap gap-4">
@@ -164,19 +97,18 @@ export function Schedule() {
         </div>
       </div>
 
-      {/* Schedule Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-4">
         {weekDays.map((day) => {
-          const daySchedule = mockSchedule.filter((item) => item.day === day);
+          const daySchedule = schedule.filter((item) => item.day === day);
           
           return (
             <div key={day} className="bg-slate-800 rounded-xl shadow-lg border border-slate-700 overflow-hidden hover:border-blue-500/50 transition-colors">
-              {/* Day Header */}
+              
               <div className="bg-gradient-to-r from-blue-600 to-blue-700 px-4 py-3 text-white">
                 <h3 className="font-semibold text-center">{day}</h3>
               </div>
 
-              {/* Classes */}
+              
               <div className="p-3 space-y-3">
                 {daySchedule.length > 0 ? (
                   daySchedule.map((item) => (
@@ -184,7 +116,6 @@ export function Schedule() {
                       key={item.id}
                       className="border border-slate-600 rounded-lg p-3 hover:shadow-md hover:border-blue-500/50 transition-all bg-slate-900/30"
                     >
-                      {/* Time with colored indicator */}
                       <div className="flex items-center gap-2 mb-2">
                         <div className={`w-1 h-12 rounded ${getTypeColor(item.type)}`}></div>
                         <div className="flex-1">
@@ -198,7 +129,7 @@ export function Schedule() {
                         </div>
                       </div>
 
-                      {/* Details */}
+                      
                       <div className="space-y-1 text-xs text-gray-300 pl-3">
                         <div className="flex items-center gap-1">
                           <MapPin className="w-3 h-3" />

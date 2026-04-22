@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { BookOpen, TrendingUp, Award } from 'lucide-react';
 
-// Описываем структуру предмета (как в базе)
+
 interface Grade {
   id: string;
   subject: string;
@@ -12,13 +12,13 @@ interface Grade {
 }
 
 export function Grades() {
-  // 1. Создаем состояние для хранения списка оценок
+  
   const [gradesList, setGradesList] = useState<Grade[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // 2. Делаем запрос к API при загрузке компонента
+  
   useEffect(() => {
-    const userEmail = localStorage.getItem('studentName'); // Почта нашего юзера
+    const userEmail = localStorage.getItem('studentName');
     
     if (userEmail) {
       fetch(`http://127.0.0.1:8000/grades/${userEmail}`)
@@ -28,15 +28,15 @@ export function Grades() {
           setLoading(false);
         })
         .catch((err) => {
-          console.error("Ошибка при получении оценок:", err);
+          console.error("Błąd podczas pobierania ocen:", err);
           setLoading(false);
         });
-    } else {console.error("Email пользователя не найден в localStorage!");
+    } else {console.error("Nie znaleziono e-maila użytkownika w localStorage!");
       setLoading(false);
     }
     }, []);
 
-  // Функции для цветов (оставляем как были)
+  
   const getGradeColor = (grade: number) => {
     if (grade >= 4.5) return 'bg-green-600/20 text-green-400 border-green-500/30';
     if (grade >= 4) return 'bg-blue-600/20 text-blue-400 border-blue-500/30';
@@ -50,29 +50,29 @@ export function Grades() {
     return 'bg-yellow-600/20 text-yellow-400 border-yellow-500/30';
   };
 
-  // 3. Автоматически считаем общую статистику по всем 7 предметам
+  
   const overallAverage = gradesList.length > 0 
     ? (gradesList.reduce((sum, g) => sum + g.average, 0) / gradesList.length).toFixed(2)
     : "0.00";
 
   if (loading) {
-    return <div className="text-white p-10">Загрузка оценок из базы данных...</div>;
+    return <div className="text-foreground p-10">Wczytywanie ocen z bazy danych...</div>
   }
 
   return (
     <div className="space-y-6">
-      {/* Header */}
+      
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-white flex items-center gap-3">
+          <h1 className="text-3xl font-bold text-foreground flex items-center gap-3">
             <BookOpen className="w-8 h-8 text-blue-400" />
             Oceny
           </h1>
-          <p className="text-gray-400 mt-1">Данные загружены из MongoDB Atlas</p>
+          <p className="text-gray-400 mt-1">Dane wczytane z MongoDB Atlas</p>
         </div>
       </div>
 
-      {/* Stats Cards (Карточки сверху) */}
+      
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="bg-gradient-to-br from-blue-600 to-blue-700 rounded-xl p-6 text-white border border-blue-500/30">
           <p className="text-blue-200 text-sm">Średnia ogólna</p>
@@ -94,7 +94,7 @@ export function Grades() {
         </div>
       </div>
 
-      {/* Таблица с оценками */}
+      
       <div className="bg-slate-800 rounded-xl border border-slate-700 overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full">
@@ -108,10 +108,10 @@ export function Grades() {
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-700">
-              {/* Проходим циклом по всем предметам из базы */}
+              
               {gradesList.map((grade) => (
                 <tr key={grade.id} className="hover:bg-slate-700/50 transition-colors">
-                  <td className="px-6 py-4 text-white font-medium">{grade.subject}</td>
+                  <td className="px-6 py-4 text-foreground font-medium">{grade.subject}</td>
                   <td className="px-6 py-4 text-gray-300">{grade.teacher}</td>
                   <td className="px-6 py-4">
                     <div className="flex flex-wrap gap-2">
