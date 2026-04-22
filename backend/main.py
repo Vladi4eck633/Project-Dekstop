@@ -1,17 +1,17 @@
+from dotenv import load_dotenv
+import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-from motor.motor_asyncio import AsyncIOMotorClient
+from motor.motor_asyncio import AsyncIOMotorClient 
 
-# Твоя исправленная ссылка
-MONGO_URL = "mongodb+srv://admin:fHTh3zDGkCt9jDlT@cluster0.tb8dyui.mongodb.net/?appName=Cluster0"
 
-# Подключаемся к облаку
+load_dotenv("api.env") 
+MONGO_URL = os.getenv("MONGO_URL")
 client = AsyncIOMotorClient(MONGO_URL)
-db = client.university_db  # Выбираем нашу базу
-users_collection = db.users  # Выбираем таблицу с юзерами
-
 app = FastAPI()
+db = client.Users
+users_collection = db.Students
 
 app.add_middleware(
     CORSMiddleware,
@@ -89,25 +89,17 @@ async def startup_event():
     except Exception as e:
         print(f"❌ Ошибка подключения к MongoDB: {e}")
 
-# @app.post("/login")
-# def login(data: LoginData):
-
-#     if data.username == "test@gmail.com" and data.password == "1234":
-#         return {"status": "ok", "message": "Zalogowanie udane"}
-
-#     return {"status": "error", "message": "Nieprawidłowy login lub hasło"}
 
 
-
-
-# @app.get("/grades/{user_id}")
-# async def get_grades(user_id: str):
-#     # Ищем все оценки в коллекции "grades", которые привязаны к конкретному user_id
-#     grades_cursor = db.grades.find({"user_id": user_id})
-#     grades = await grades_cursor.to_list(length=100)
-    
-#     # Конвертируем MongoDB _id (который объект) в строку (которую понимает React)
-#     for grade in grades:
-#         grade["id"] = str(grade.pop("_id"))
         
-#     return grades
+
+@app.get("/users")
+async def get_users():
+    users = []
+    async for user in users_collection.find():
+        user["_id"] = str(user["_id"])
+        users.append(user)
+    return users
+
+
+
