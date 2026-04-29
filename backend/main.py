@@ -16,8 +16,6 @@ db = client.university_db
 users_collection = db.users
 
 
-
-
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -27,21 +25,15 @@ app.add_middleware(
 )
 
 
-
 class LoginData(BaseModel):
     username: str
     password: str
-
-
-
 class ProfileUpdate(BaseModel):
     firstName: str
     lastName: str
     phone: str
     address: str
     avatar: Optional[str] = None
-
-
 class PasswordChange(BaseModel):
     currentPassword: str
     newPassword: str
@@ -52,7 +44,6 @@ def root():
     return {"message": "API działa"}
 
  
-
 @app.post("/login")
 async def login(data: LoginData):
     try:
@@ -75,9 +66,6 @@ async def login(data: LoginData):
     except Exception as e:
         return {"status": "error", "message": f"Błąd bazy danych: {str(e)}"}
     
-
-
-
 
 @app.get("/grades/{username}")
 async def get_grades(username: str):
@@ -103,9 +91,6 @@ async def get_grades(username: str):
     except Exception as e:
         return {"status": "error", "message": str(e)}
     
-
-
-
 
 @app.get("/timetable/{username}")
 async def get_timetable(username: str):
@@ -133,9 +118,6 @@ async def get_timetable(username: str):
         return {"status": "error", "message": str(e)}
 
 
-
-
-
 @app.get("/attendance/{username}")
 async def get_attendance(username: str):
     try:
@@ -161,9 +143,6 @@ async def get_attendance(username: str):
 
 
 
-
-
-
 @app.get("/profile/{username}")
 async def get_profile(username: str):
     profile = await db.profiles.find_one({"username": username})
@@ -172,7 +151,6 @@ async def get_profile(username: str):
         del profile["_id"]
         return profile
     return {"error": "Profile not found"}
-
 
 
 @app.post("/profile/{username}")
@@ -197,8 +175,6 @@ async def update_profile(username: str, data: ProfileUpdate):
         {"$set": update_dict}
     )
     return {"status": "success"}
-
-
 
 
 @app.post("/settings/change-password/{username}")
@@ -217,12 +193,6 @@ async def change_password(username: str, data: PasswordChange):
     return {"message": "Hasło zostało zmienione"}
 
 
-
-
-
-
-
-
 @app.post("/profile/{username}")
 async def update_profile(username: str, data: ProfileUpdate):
     current = await db.profiles.find_one({"username": username})
@@ -245,7 +215,6 @@ async def update_profile(username: str, data: ProfileUpdate):
         {"$set": update_dict}
     )
     return {"status": "success"}
-
 
 
 
@@ -270,8 +239,6 @@ async def change_password(username: str, data: PasswordChange):
     return {"message": "Hasło zostało zmienione в коллекции users"}@app.post("/settings/change-password/{username}")
 
 
-
-
 @app.on_event("startup")
 async def startup_event():
     try:
@@ -281,8 +248,6 @@ async def startup_event():
         print(f" Błąd połączenia z MongoDB: {e}")
 
 
-
-        
 
 @app.get("/users")
 async def get_users():

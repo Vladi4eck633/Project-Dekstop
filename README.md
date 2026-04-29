@@ -1,84 +1,201 @@
-# Project-Dekstop
+# Student Journal Web App
 
-Grupa: Marat Komar 88093 i Vladyslav Zubak 87149
-link do Figma: https://www.figma.com/make/H0oF4FGNPuteYrOd4JmtuG/Student-Journal-Web-App?t=xQSTYw1EThYQhnP1-1
+## Opis projektu
 
-Stwórz nowoczesny frontend aplikacji webowej typu „Dziennik Studenta” (webowy dziennik ocen i zajęć). Projekt powinien być responsywny, estetyczny i przejrzysty
-1. Strona logowania
-Formularz z polami: email, hasło
-Przycisk „Zaloguj się”
-Link „Nie masz konta? Zarejestruj się”
-Walidacja formularza
-Nowoczesny design (card layout, cień, zaokrąglone rogi)
+Projekt to aplikacja webowa „Dziennik Studenta" z opakowaniem Electron. Zawiera:
+- `frontend/` — aplikacja React + Vite z interfejsem dziennika studenckiego
+- `backend/` — serwer FastAPI pracujący z MongoDB
+- `main.js` — prosty launcher Electron, ładujący aplikację webową z `http://localhost:5173`
 
-2. Dashboard studenta
-Górny pasek nawigacyjny (navbar) z:
-Logo „Dziennik Studenta”
-Imię i nazwisko studenta
-Ikona profilu
-Przycisk „Wyloguj”
+Aplikacja obsługuje:
+- stronę logowania i prostą autentykację
+- chroniony dashboard z nawigacją
+- sekcje: wiadomości, oceny, harmonogram, frekwencję, profil, ustawienia
+- edycję profilu i zmianę hasła
+- przechowywanie stanu logowania w `localStorage`
 
-Lewy panel boczny (sidebar) z sekcjami:
-Oceny
-Plan zajęć
-Obecności
-Wiadomości
-Ustawienia
-Sekcja Oceny
+## Architektura
 
-3. Tabela z kolumnami:
-Przedmiot
-Nauczyciel
-Oceny cząstkowe
-Średnia
-Status (zaliczony/niezaliczony)
-Kolorowe oznaczenia ocen (np. zielony – dobre, czerwony – słabe)
+### Frontend
 
-4. Plan zajęć
-Widok tygodniowy (pon–pt)
-Godziny zajęć
-Przedmiot, sala, prowadzący
-Karty lub tabela z nowoczesnym UI
+Folder: `frontend/`
 
-5. Obecności
-Procent obecności
-Wizualny pasek postępu (progress bar)
+- Używa React + Vite + Tailwind CSS
+- Routing za pośrednictwem `react-router`
+- Chronione trasy zdefiniowane w `frontend/src/app/routes.tsx`
+- `DashboardLayout.tsx` zawiera górny pasek, boczną nawigację i `Outlet`
+- Wybór motywu zapisany w `localStorage.appTheme`
+- Żądania API wykonywane na `http://127.0.0.1:8000`
 
-6. Wiadomości
-Lista wiadomości od wykładowców
-Możliwość kliknięcia i podglądu treści
+Główne strony:
+- `Login.tsx` — strona logowania
+- `News.tsx` — główna strona z aktualnościami
+- `Grades.tsx` — oceny użytkownika
+- `Schedule.tsx` — harmonogram zajęć
+- `Attendance.tsx` — dane frekwencji
+- `Messages.tsx` — wiadomości
+- `Profile.tsx` — profil studenta z możliwością edycji
+- `Settings.tsx` — ustawienia aplikacji i zmiana hasła
 
-7. Profil użytkownika (Dane studenta)
-Osobna sekcja „Mój profil”
-Wyświetlanie danych:
-Imię i nazwisko
-Numer indeksu
-Kierunek studiów
-Rok studiów
-Adres e-mail
-Numer telefonu
+### Backend
 
-Możliwość edycji danych (formularz edycji)
-Zdjęcie profilowe (avatar)
-Nowoczesny układ w formie karty (card layout)
+Folder: `backend/`
 
-8. Strona główna (Aktualności uczelni)
-Dashboard startowy po zalogowaniu
-Sekcja „Aktualności” z fikcyjnymi newsami o uczelni
-Każdy news powinien zawierać:
-Tytuł
-Datę publikacji
-Krótki opis
-Opcjonalne zdjęcie
-Układ w formie kart (grid layout)
-Możliwość kliknięcia „Czytaj więcej”
-Estetyczny, nowoczesny design z lekkimi animacjami hover
+- Używa FastAPI i Motor do pracy z MongoDB
+- Ładuje zmienne środowiska z `api.env`
+
+Usługi:
+- `POST /login` — weryfikacja `username`/`password`
+- `GET /grades/{username}` — zwraca listę ocen studenta z bazy danych
+- `GET /timetable/{username}` — zwraca harmonogram z bazy
+- `GET /attendance/{username}` — zwraca frekwencję z bazy
+- `GET /profile/{username}` — zwraca profil studenta z bazy
+- `POST /profile/{username}` — aktualizacja danych profilu w bazie danych
+- `POST /settings/change-password/{username}` — zmiana hasła użytkownika w bazie danych
+
+## Jak aplikacja działa
+
+### Proces logowania
+
+1. Użytkownik otwiera `/login` i wprowadza email i hasło
+2. Formularz waliduje email (sprawdzenie domeny `.com` lub `.pl`)
+3. Po wysłaniu żądanie jest wysyłane na endpoint `POST /login`
+4. Jeśli uwierzytelnienie się powiedzie (`status: ok`), zapisywane są w `localStorage`:
+   - `isLoggedIn = true`
+   - `studentName = email` (używane jako identyfikator użytkownika w pozostałych żądaniach)
+5. Przekierowanie na `/dashboard`
+
+### Chronione trasy
+
+- Komponent `ProtectedRoute` w `frontend/src/app/routes.tsx` sprawdza obecność `localStorage.isLoggedIn`
+- Jeśli użytkownik nie jest uwierzytelniony, przechodzi na `/login`
+
+### Użycie danych w interfejsie
+
+- Po zalogowaniu każdy komponent pulpitu pobiera nazwę użytkownika z `localStorage.studentName`
+- Komponenty wykonują żądania do odpowiednich endpointów (`/grades`, `/timetable`, `/attendance`, `/profile`)
+- `DashboardLayout` pokazuje panel boczny, pasek górny z imieniem użytkownika i przyciskiem wylogowania
+
+### Edycja danych
+
+1. **Profil**: `Profile.tsx` ładuje `GET /profile/{username}`, pozwala edytować i wysyła `POST /profile/{username}` do zapisania
+2. **Hasło**: `Settings.tsx` wysyła `POST /settings/change-password/{username}` z obecnym i nowym hasłem
+3. **Motyw**: wybór motywu jest zapisywany w `localStorage.appTheme` i stosowany przez klasę CSS `dark` na `<html>`
 
 
-Wymagania wizualne:
-Minimalistyczny, nowoczesny design
-Jasny motyw (light mode)
-Delikatne animacje (hover, przejścia)
-Responsywność (mobile, tablet, desktop)
-Spójna kolorystyka (np. odcienie niebieskiego i szarości)
-Ikony (np. Heroicons lub FontAwesome)
+## Uruchamianie projektu
+
+### 1. Uruchamianie backendu
+
+1. Przejdź do `backend/`
+2. Utwórz plik `api.env` ze zmienną `MONGO_URL`
+3. Zainstaluj zależności Python:
+   - `pip install fastapi uvicorn motor python-dotenv`
+4. Uruchom serwer:
+   - `uvicorn main:app --reload --port 8000`
+
+### 2. Uruchamianie frontendu
+
+1. Przejdź do `frontend/`
+2. Zainstaluj zależności:
+   - `npm install`
+3. Uruchom aplikację:
+   - `npm run dev`
+
+### 3. Uruchamianie Electron (jeśli potrzebny)
+
+1. W katalogu głównym projektu wykonaj:
+   - `npm install`
+2. Upewnij się, że serwer frontendu działa na `http://localhost:5173`
+3. Uruchom:
+   - `npm start`
+
+> Ważne: Electron ładuje `http://localhost:5173`, dlatego frontend musi być uruchomiony przed startem Electron.
+
+## Struktura bazy danych (kolekcje MongoDB)
+
+Aplikacja używa bazy `university_db` z 5 kolekcjami:
+
+### `users` — dane autentykacji
+```javascript
+{
+  _id: ObjectId,
+  username: string,        // email użytkownika
+  password: string,        // hasło (WAŻNE: powinno być hashowane!)
+  full_name: string        // pełne imię
+}
+```
+
+### `profiles` — profil studenta
+```javascript
+{
+  _id: ObjectId,
+  username: string,        // email studenta (klucz obcy)
+  firstName: string,       // imię
+  lastName: string,        // nazwisko
+  studentId: string,       // numer indeksu
+  major: string,           // kierunek studiów
+  year: string,            // rok studiów ("1", "2", "3", "4")
+  email: string,           // adres e-mail
+  phone: string,           // numer telefonu
+  address: string,         // adres zamieszkania
+  avatar: string,          // zdjęcie profilu (data:image/...)
+  avatarChanged: boolean   // flaga zmiany awatara
+}
+```
+
+### `grades` — oceny studenta
+```javascript
+{
+  _id: ObjectId,
+  username: string,        // email studenta
+  subject: string,         // nazwa przedmiotu
+  teacher: string,         // imię wykładowcy
+  grades: Array(number),   // tablica ocen [3, 4, 5, 4]
+  status: string           // status ("zaliczony" / "niezaliczony")
+}
+```
+
+### `timetable` — harmonogram zajęć
+```javascript
+{
+  _id: ObjectId,
+  username: string,        // email studenta
+  day: string,             // dzień tygodnia ("Poniedziałek", "Wtorek", ...)
+  time: string,            // czas zajęć ("10:00 - 11:30")
+  subject: string,         // nazwa przedmiotu
+  room: string,            // numer sali ("Lab 115")
+  teacher: string,         // imię wykładowcy
+  type: string             // typ zajęć ("lab", "lecture", "tutorial")
+}
+```
+
+### `attendance` — frekwencja
+```javascript
+{
+  _id: ObjectId,
+  username: string,        // email studenta
+  subject: string,         // nazwa przedmiotu
+  totalClasses: number,    // łącznie zajęć
+  attended: number,        // uczęszczane
+  excused: number,         // nieobecności usprawiedliwione
+  unexcused: number,       // nieobecności nieusprawiedliwione
+  percentage: number       // procent obecności (obliczane: attended/totalClasses*100)
+}
+```
+
+## Struktura projektu
+
+```
+/frontend      # Interfejs React + Vite
+/backend       # Serwer FastAPI
+main.js        # Punkt wejścia Electron
+package.json   # Skrypty npm / Electron
+```
+
+## Co trzeba ulepszyć
+
+- hasła w bazie powinny być hashowane
+- autentykację należy wykonać za pośrednictwem JWT lub tokena sesji
+- walidację pól logowania można wydzielić do osobnego narzędzia
+
