@@ -95,10 +95,10 @@ export function Grades() {
       </div>
 
       
-      <div className="bg-slate-800 rounded-xl border border-slate-700 overflow-hidden">
+      <div className="bg-card rounded-xl border border-border overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full">
-            <thead className="bg-slate-900/50 border-b border-slate-700">
+            <thead className="bg-card/50 border-b border-border">
               <tr>
                 <th className="px-6 py-4 text-left text-sm font-semibold text-gray-200">Przedmiot</th>
                 <th className="px-6 py-4 text-left text-sm font-semibold text-gray-200">Nauczyciel</th>
@@ -107,10 +107,10 @@ export function Grades() {
                 <th className="px-6 py-4 text-center text-sm font-semibold text-gray-200">Status</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-700">
+            <tbody className="divide-y divide-border">
               
               {gradesList.map((grade) => (
-                <tr key={grade.id} className="hover:bg-slate-700/50 transition-colors">
+                <tr key={grade.id} className="hover:bg-muted/50 transition-colors">
                   <td className="px-6 py-4 text-foreground font-medium">{grade.subject}</td>
                   <td className="px-6 py-4 text-gray-300">{grade.teacher}</td>
                   <td className="px-6 py-4">

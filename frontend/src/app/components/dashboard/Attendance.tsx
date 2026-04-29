@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { UserCheck, TrendingUp, Calendar, AlertCircle } from 'lucide-react';
-import * as Progress from '@radix-ui/react-progress';
 
 interface AttendanceRecord {
   id: number;
@@ -19,7 +18,8 @@ export function Attendance() {
   useEffect(() => {
     const userEmail = localStorage.getItem('studentName'); 
     if (userEmail) {
-      fetch(`http://127.0.0.1:8000/attendance/${userEmail}`)
+      // Добавить коллекцию attendance
+      fetch(`http://127.0.0.1:8000/attendance/${userEmail}`) 
         .then(res => res.json())
         .then(data => {
           setAttendanceData(Array.isArray(data) ? data : []);
@@ -38,20 +38,33 @@ export function Attendance() {
     return 'text-red-400';
   };
 
-  const getProgressColor = (percentage: number) => {
-    if (percentage >= 90) return 'bg-green-500';
-    if (percentage >= 75) return 'bg-yellow-500';
-    return 'bg-red-500';
+  const getBreakdown = (record: AttendanceRecord) => {
+    if (record.totalClasses === 0) {
+      return {
+        attendedPct: 0,
+        excusedPct: 0,
+        unexcusedPct: 0,
+      };
+    }
+
+    const attendedPct = (record.attended / record.totalClasses) * 100;
+    const excusedPct = (record.excused / record.totalClasses) * 100;
+    const unexcusedPct = (record.unexcused / record.totalClasses) * 100;
+
+    return {
+      attendedPct,
+      excusedPct,
+      unexcusedPct,
+    };
   };
 
-  
   const totalAttended = attendanceData.reduce((sum, r) => sum + r.attended, 0);
   const totalClasses = attendanceData.reduce((sum, r) => sum + r.totalClasses, 0);
   const overallPercentage = totalClasses > 0 ? ((totalAttended / totalClasses) * 100).toFixed(1) : "0.0";
   const totalUnexcused = attendanceData.reduce((sum, r) => sum + r.unexcused, 0);
 
   if (loading) {
-    return <div className="text-white p-10 text-center">Ładowanie frekwencji...</div>;
+    return <div className="text-foreground p-10 text-center">Ładowanie frekwencji...</div>;
   }
 
   return (
@@ -59,7 +72,7 @@ export function Attendance() {
       
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-white flex items-center gap-3">
+          <h1 className="text-3xl font-bold text-foreground flex items-center gap-3">
             <UserCheck className="w-8 h-8 text-blue-400" />
             Obecności
           </h1>
@@ -106,9 +119,9 @@ export function Attendance() {
       </div>
 
       
-      <div className="bg-slate-800 rounded-xl shadow-lg border border-slate-700 overflow-hidden">
-        <div className="px-6 py-4 border-b border-slate-700 bg-slate-900/50">
-          <h2 className="font-semibold text-white">Szczegółowa frekwencja</h2>
+      <div className="bg-card rounded-xl shadow-lg border border-border overflow-hidden">
+        <div className="px-6 py-4 border-b border-border bg-card/50">
+          <h2 className="font-semibold text-foreground">Szczegółowa frekwencja</h2>
         </div>
 
         <div className="p-6 space-y-6">
@@ -116,8 +129,8 @@ export function Attendance() {
             <div key={record.id} className="space-y-3">
               <div className="flex items-center justify-between">
                 <div>
-                  <h3 className="font-semibold text-white">{record.subject}</h3>
-                  <p className="text-sm text-gray-400">
+                  <h3 className="font-semibold text-foreground">{record.subject}</h3>
+                  <p className="text-sm text-muted-foreground">
                     {record.attended} / {record.totalClasses} zajęć
                   </p>
                 </div>
@@ -129,19 +142,21 @@ export function Attendance() {
               </div>
 
               
-              <Progress.Root
-                className="relative overflow-hidden bg-slate-700 rounded-full w-full h-3"
-                value={record.percentage}
-              >
-                <Progress.Indicator
-                  className={`w-full h-full transition-transform duration-300 ${getProgressColor(
-                    record.percentage
-                  )}`}
-                  style={{ transform: `translateX(-${100 - record.percentage}%)` }}
+              <div className="flex h-3 w-full overflow-hidden rounded-full bg-slate-700/30 dark:bg-slate-200/15">
+                <div
+                  className="bg-green-500 h-full"
+                  style={{ flexBasis: `${getBreakdown(record).attendedPct}%` }}
                 />
-              </Progress.Root>
+                <div
+                  className="bg-yellow-500 h-full"
+                  style={{ flexBasis: `${getBreakdown(record).excusedPct}%` }}
+                />
+                <div
+                  className="bg-red-500 h-full"
+                  style={{ flexBasis: `${getBreakdown(record).unexcusedPct}%` }}
+                />
+              </div>
 
-              
               <div className="flex flex-wrap gap-4 text-sm">
                 <div className="flex items-center gap-2">
                   <div className="w-3 h-3 bg-green-500 rounded-full"></div>

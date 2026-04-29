@@ -60,7 +60,7 @@ export function Schedule() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-64 text-white">
+      <div className="flex items-center justify-center h-64 text-foreground">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mr-3"></div>
         Ładowanie planu zajęć...
       </div>
@@ -71,16 +71,16 @@ export function Schedule() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-white flex items-center gap-3">
+          <h1 className="text-3xl font-bold text-foreground flex items-center gap-3">
             <Calendar className="w-8 h-8 text-blue-400" />
             Plan zajęć
           </h1>
-          <p className="text-gray-400 mt-1">Harmonogram zajęć na bieżący tydzień</p>
+          <p className="text-muted-foreground mt-1">Harmonogram zajęć na bieżący tydzień</p>
         </div>
       </div>
 
-      <div className="bg-slate-800 rounded-xl shadow-lg border border-slate-700 p-4">
-        <h3 className="font-semibold text-white mb-3">Legenda:</h3>
+      <div className="bg-card rounded-xl shadow-lg border border-border p-4">
+        <h3 className="font-semibold text-foreground mb-3">Legenda:</h3>
         <div className="flex flex-wrap gap-4">
           <div className="flex items-center gap-2">
             <div className="w-4 h-4 bg-blue-500 rounded"></div>
@@ -102,7 +102,7 @@ export function Schedule() {
           const daySchedule = schedule.filter((item) => item.day === day);
           
           return (
-            <div key={day} className="bg-slate-800 rounded-xl shadow-lg border border-slate-700 overflow-hidden hover:border-blue-500/50 transition-colors">
+            <div key={day} className="bg-card rounded-xl shadow-lg border border-border overflow-hidden hover:border-blue-500/50 transition-colors">
               
               <div className="bg-gradient-to-r from-blue-600 to-blue-700 px-4 py-3 text-white">
                 <h3 className="font-semibold text-center">{day}</h3>
@@ -114,7 +114,7 @@ export function Schedule() {
                   daySchedule.map((item) => (
                     <div
                       key={item.id}
-                      className="border border-slate-600 rounded-lg p-3 hover:shadow-md hover:border-blue-500/50 transition-all bg-slate-900/30"
+                      className="border border-border rounded-lg p-3 hover:shadow-md hover:border-blue-500/50 transition-all bg-card/50"
                     >
                       <div className="flex items-center gap-2 mb-2">
                         <div className={`w-1 h-12 rounded ${getTypeColor(item.type)}`}></div>
@@ -123,14 +123,14 @@ export function Schedule() {
                             <Clock className="w-3 h-3" />
                             <span>{item.time}</span>
                           </div>
-                          <div className="font-semibold text-sm text-white leading-tight">
+                          <div className="font-semibold text-sm text-foreground leading-tight">
                             {item.subject}
                           </div>
                         </div>
                       </div>
 
                       
-                      <div className="space-y-1 text-xs text-gray-300 pl-3">
+                      <div className="space-y-1 text-xs text-muted-foreground pl-3">
                         <div className="flex items-center gap-1">
                           <MapPin className="w-3 h-3" />
                           <span>{item.room}</span>
@@ -140,7 +140,7 @@ export function Schedule() {
                           <span className="truncate">{item.teacher}</span>
                         </div>
                         <div>
-                          <span className={`inline-block px-2 py-0.5 rounded text-white text-xs ${getTypeColor(item.type)}`}>
+                          <span className={`inline-block px-2 py-0.5 rounded text-foreground text-xs ${getTypeColor(item.type)}`}>
                             {getTypeLabel(item.type)}
                           </span>
                         </div>
@@ -148,8 +148,8 @@ export function Schedule() {
                     </div>
                   ))
                 ) : (
-                  <div className="text-center py-8 text-gray-400">
-                    <Calendar className="w-8 h-8 mx-auto mb-2 text-gray-500" />
+                  <div className="text-center py-8 text-muted-foreground">
+                    <Calendar className="w-8 h-8 mx-auto mb-2 text-muted-foreground" />
                     <p className="text-sm">Brak zajęć</p>
                   </div>
                 )}

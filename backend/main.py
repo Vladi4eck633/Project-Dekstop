@@ -12,8 +12,8 @@ load_dotenv("api.env")
 MONGO_URL = os.getenv("MONGO_URL")
 client = AsyncIOMotorClient(MONGO_URL)
 app = FastAPI()
-db = client.Users
-users_collection = db.Students
+db = client.university_db
+users_collection = db.users
 
 
 

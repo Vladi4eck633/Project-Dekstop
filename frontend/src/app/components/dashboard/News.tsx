@@ -88,11 +88,11 @@ export function News() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-white flex items-center gap-3">
+          <h1 className="text-3xl font-bold text-foreground flex items-center gap-3">
             <Newspaper className="w-8 h-8 text-blue-400" />
             Aktualności
           </h1>
-          <p className="text-gray-400 mt-1">Najnowsze wiadomości z uczelni</p>
+          <p className="text-muted-foreground mt-1">Najnowsze wiadomości z uczelni</p>
         </div>
       </div>
 
@@ -101,7 +101,7 @@ export function News() {
         {mockNews.map((news) => (
           <div
             key={news.id}
-            className="bg-slate-800 rounded-xl shadow-lg border border-slate-700 overflow-hidden hover:shadow-2xl hover:shadow-blue-500/10 transition-all duration-300 hover:-translate-y-1 cursor-pointer hover:border-blue-500/50"
+            className="bg-card rounded-xl shadow-lg border border-border overflow-hidden hover:shadow-2xl hover:shadow-blue-500/10 transition-all duration-300 hover:-translate-y-1 cursor-pointer hover:border-blue-500/50"
             onClick={() => setSelectedNews(news)}
           >
             {/* Category Badge */}
@@ -113,16 +113,16 @@ export function News() {
 
             {/* Content */}
             <div className="p-4">
-              <h3 className="font-bold text-lg text-white mb-2 line-clamp-2">
+              <h3 className="font-bold text-lg text-foreground mb-2 line-clamp-2">
                 {news.title}
               </h3>
 
-              <div className="flex items-center gap-2 text-sm text-gray-400 mb-3">
+              <div className="flex items-center gap-2 text-sm text-muted-foreground mb-3">
                 <Calendar className="w-4 h-4" />
                 <span>{news.date}</span>
               </div>
 
-              <p className="text-gray-300 text-sm mb-4 line-clamp-3">
+              <p className="text-muted-foreground text-sm mb-4 line-clamp-3">
                 {news.description}
               </p>
 
@@ -142,7 +142,7 @@ export function News() {
           onClick={() => setSelectedNews(null)}
         >
           <div
-            className="bg-slate-800 border border-slate-700 rounded-2xl shadow-2xl max-w-2xl w-full max-h-[80vh] overflow-y-auto"
+            className="bg-card border border-border rounded-2xl shadow-2xl max-w-2xl w-full max-h-[80vh] overflow-y-auto"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="p-6">
@@ -152,17 +152,17 @@ export function News() {
                 </span>
               </div>
 
-              <h2 className="text-2xl font-bold text-white mb-3">
+              <h2 className="text-2xl font-bold text-foreground mb-3">
                 {selectedNews.title}
               </h2>
 
-              <div className="flex items-center gap-2 text-sm text-gray-400 mb-6">
+              <div className="flex items-center gap-2 text-sm text-muted-foreground mb-6">
                 <Calendar className="w-4 h-4" />
                 <span>{selectedNews.date}</span>
               </div>
 
               <div className="prose max-w-none">
-                <p className="text-gray-300 leading-relaxed">
+                <p className="text-muted-foreground leading-relaxed">
                   {selectedNews.fullContent}
                 </p>
               </div>

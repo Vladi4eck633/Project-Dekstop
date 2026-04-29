@@ -4,8 +4,10 @@ import { GraduationCap, Mail, Lock, LogIn } from 'lucide-react';
 
 export function Login() {
   const navigate = useNavigate();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState('test@gmail.com');
+  // const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('12345');
+  // const [password, setPassword] = useState('');
   const [error, setError] = useState('');
 
 

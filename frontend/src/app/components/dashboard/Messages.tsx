@@ -109,31 +109,31 @@ export function Messages() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-white flex items-center gap-3">
+          <h1 className="text-3xl font-bold text-foreground flex items-center gap-3">
             <Mail className="w-8 h-8 text-blue-400" />
             Wiadomości
           </h1>
-          <p className="text-gray-400 mt-1">
+          <p className="text-muted-foreground mt-1">
             {unreadCount > 0 ? `${unreadCount} nieprzeczytanych wiadomości` : 'Brak nowych wiadomości'}
           </p>
         </div>
       </div>
 
       {/* Messages Container */}
-      <div className="bg-slate-800 rounded-xl shadow-lg border border-slate-700 overflow-hidden">
-        <div className="grid grid-cols-1 lg:grid-cols-3 divide-y lg:divide-y-0 lg:divide-x divide-slate-700">
+      <div className="bg-card rounded-xl shadow-lg border border-border overflow-hidden">
+        <div className="grid grid-cols-1 lg:grid-cols-3 divide-y lg:divide-y-0 lg:divide-x divide-border">
           {/* Messages List */}
           <div className="lg:col-span-1">
             {/* Search Bar */}
-            <div className="p-4 border-b border-slate-700">
+            <div className="p-4 border-b border-border">
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
                 <input
                   type="text"
                   placeholder="Szukaj wiadomości..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 bg-slate-900/50 border border-slate-600 rounded-lg text-white placeholder-gray-500 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                  className="w-full pl-10 pr-4 py-2 bg-input border border-border rounded-lg text-foreground placeholder:text-muted-foreground focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
                 />
               </div>
             </div>
@@ -145,7 +145,7 @@ export function Messages() {
                   <div
                     key={message.id}
                     onClick={() => handleMessageClick(message)}
-                    className={`p-4 border-b border-slate-700 cursor-pointer transition-colors hover:bg-slate-700/50 ${
+                    className={`p-4 border-b border-border cursor-pointer transition-colors hover:bg-muted/50 ${
                       selectedMessage?.id === message.id ? 'bg-blue-900/30' : ''
                     } ${!message.isRead ? 'bg-blue-900/20' : ''}`}
                   >
@@ -182,13 +182,13 @@ export function Messages() {
                     </div>
                     <p
                       className={`text-sm mb-1 truncate ${
-                        message.isRead ? 'text-gray-300' : 'text-white font-medium'
+                        message.isRead ? 'text-muted-foreground' : 'text-foreground font-medium'
                       }`}
                     >
                       {message.subject}
                     </p>
-                    <p className="text-xs text-gray-400 truncate mb-2">{message.preview}</p>
-                    <div className="flex items-center gap-1 text-xs text-gray-500">
+                    <p className="text-xs text-muted-foreground truncate mb-2">{message.preview}</p>
+                    <div className="flex items-center gap-1 text-xs text-muted-foreground">
                       <Clock className="w-3 h-3" />
                       <span>
                         {message.date}, {message.time}
@@ -197,8 +197,8 @@ export function Messages() {
                   </div>
                 ))
               ) : (
-                <div className="text-center py-12 text-gray-400">
-                  <Inbox className="w-12 h-12 mx-auto mb-3 text-gray-500" />
+                <div className="text-center py-12 text-muted-foreground">
+                  <Inbox className="w-12 h-12 mx-auto mb-3 text-muted-foreground" />
                   <p>Brak wiadomości</p>
                 </div>
               )}
@@ -210,24 +210,24 @@ export function Messages() {
             {selectedMessage ? (
               <div className="space-y-6">
                 {/* Message Header */}
-                <div className="border-b border-slate-700 pb-4">
+                <div className="border-b border-border pb-4">
                   <div className="flex items-start justify-between mb-4">
-                    <h2 className="text-2xl font-bold text-white">{selectedMessage.subject}</h2>
+                    <h2 className="text-2xl font-bold text-foreground">{selectedMessage.subject}</h2>
                     <div className="flex gap-2">
                       <button
                         onClick={() => toggleStar(selectedMessage.id)}
-                        className="p-2 hover:bg-slate-700 rounded-lg transition-colors"
+                        className="p-2 hover:bg-muted rounded-lg transition-colors"
                       >
                         <Star
                           className={`w-5 h-5 ${
                             selectedMessage.isStarred
                               ? 'fill-yellow-400 text-yellow-400'
-                              : 'text-gray-400'
+                              : 'text-muted-foreground'
                           }`}
                         />
                       </button>
-                      <button className="p-2 hover:bg-slate-700 rounded-lg transition-colors">
-                        <Trash2 className="w-5 h-5 text-gray-400" />
+                      <button className="p-2 hover:bg-muted rounded-lg transition-colors">
+                        <Trash2 className="w-5 h-5 text-muted-foreground" />
                       </button>
                     </div>
                   </div>
@@ -239,8 +239,8 @@ export function Messages() {
                       </span>
                     </div>
                     <div>
-                      <p className="font-medium text-white">{selectedMessage.sender}</p>
-                      <p className="text-sm text-gray-400">
+                      <p className="font-medium text-foreground">{selectedMessage.sender}</p>
+                      <p className="text-sm text-muted-foreground">
                         {selectedMessage.date}, {selectedMessage.time}
                       </p>
                     </div>
@@ -249,7 +249,7 @@ export function Messages() {
 
                 {/* Message Content */}
                 <div className="prose max-w-none">
-                  <p className="text-gray-300 whitespace-pre-wrap">{selectedMessage.content}</p>
+                  <p className="text-muted-foreground whitespace-pre-wrap">{selectedMessage.content}</p>
                 </div>
 
                 {/* Reply Button */}
@@ -261,9 +261,9 @@ export function Messages() {
                 </div>
               </div>
             ) : (
-              <div className="flex items-center justify-center h-full text-gray-400">
+              <div className="flex items-center justify-center h-full text-muted-foreground">
                 <div className="text-center">
-                  <Mail className="w-16 h-16 mx-auto mb-4 text-gray-500" />
+                  <Mail className="w-16 h-16 mx-auto mb-4 text-muted-foreground" />
                   <p className="text-lg">Wybierz wiadomość aby ją przeczytać</p>
                 </div>
               </div>
